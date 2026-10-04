@@ -1,13 +1,13 @@
 package com.selling.dto;
 
-import java.math.BigDecimal;
-import java.time.LocalDateTime;
-import java.util.List;
-
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
+
+import java.math.BigDecimal;
+import java.time.LocalDateTime;
+import java.util.List;
 
 @AllArgsConstructor
 @NoArgsConstructor
@@ -22,6 +22,7 @@ public class CustomerRequestDTO {
   private String contact01;
   private String contact02;
   private LocalDateTime date;
+  private LocalDateTime deliveryDate;
   private String remark;
   private String status; // active, inactive
   private Integer userId;

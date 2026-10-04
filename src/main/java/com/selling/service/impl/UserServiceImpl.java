@@ -1,14 +1,5 @@
 package com.selling.service.impl;
 
-import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
-import java.util.Random;
-
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-import org.springframework.stereotype.Service;
-
 import com.selling.dto.UserDto;
 import com.selling.dto.get.UserDtoForGet;
 import com.selling.model.Otp;
@@ -20,6 +11,14 @@ import com.selling.repository.UserRepo;
 import com.selling.service.UserService;
 import com.selling.util.MailService;
 import com.selling.util.MapperService;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.stereotype.Service;
+
+import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
+import java.util.Random;
 
 @Service
 public class UserServiceImpl implements UserService {
@@ -114,10 +113,8 @@ public class UserServiceImpl implements UserService {
       userDto.setProductId(userDto.getProductId());
       userDto.setStatus(userDto.getStatus());
       if (userDto.getPassword()==null){
-        System.out.println("1");
         userDto.setPassword(byId.getPassword());
       }else {
-        System.out.println("2");
         userDto.setPassword(passwordEncoder.encode(userDto.getPassword()));
       }
       User user = mapperService.map(userDto, User.class);
@@ -167,8 +164,6 @@ public class UserServiceImpl implements UserService {
       }
       return false;
     } catch (Exception e) {
-      System.out.println("============");
-      System.out.println(e.getMessage());
       return false;
     }
   }
@@ -217,6 +212,4 @@ public class UserServiceImpl implements UserService {
     User save = userRepo.save(user);
     return mapperService.map(save, UserDtoForGet.class);
   }
-
-  // mapping done inline via MapperService to reduce boilerplate
 }
