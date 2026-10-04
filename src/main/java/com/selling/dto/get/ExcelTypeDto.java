@@ -10,10 +10,11 @@ import lombok.ToString;
 @Data
 @ToString
 public class ExcelTypeDto {
-    private int id;
+    private String id;
     private String name;
     private String address;
     private String contact01;
     private String contact02;
     private String price;
+    private String note;
 }

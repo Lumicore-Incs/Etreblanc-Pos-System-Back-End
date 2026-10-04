@@ -1,30 +1,19 @@
 package com.selling.controller;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
-
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.CrossOrigin;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestHeader;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
-
 import com.selling.dto.ResetPasswordDto;
 import com.selling.dto.UserDto;
 import com.selling.dto.get.UserDtoForGet;
 import com.selling.service.UserService;
 import com.selling.util.JWTTokenGenerator;
 import com.selling.util.TokenStatus;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
 
 @CrossOrigin()
 @RestController
@@ -94,7 +83,7 @@ public class AuthController {
   }
 
   @PutMapping("/update/{userId}")
-  public ResponseEntity<Object> updateUser(@PathVariable Long userId, @RequestBody UserDto userDto,
+  public ResponseEntity<Object> updateUser(@PathVariable("userId") Long userId, @RequestBody UserDto userDto,
                                            @RequestHeader(name = "Authorization") String authorizationHeader) {
     if (this.jwtTokenGenerator.validateJwtToken(authorizationHeader)) {
       UserDtoForGet dto = this.userService.updateUser(userDto, userId);
@@ -122,7 +111,7 @@ public class AuthController {
   }
 
   @PostMapping("/send")
-  public String sendOtp(@RequestParam String email) {
+  public String sendOtp(@RequestParam("email") String email) {
     boolean isSave = userService.sendOtpToEmail(email);
     if (isSave) {
       return "OTP sent successfully to " + email;
@@ -132,7 +121,7 @@ public class AuthController {
   }
 
   @PostMapping("/validate")
-  public String validateOtp(@RequestParam String email, @RequestParam String otp) {
+  public String validateOtp(@RequestParam("email") String email, @RequestParam("otp") String otp) {
     boolean isValid = userService.validateOtp(email, otp);
     if (isValid) {
       return "OTP is valid";
@@ -158,14 +147,14 @@ public class AuthController {
 
   @DeleteMapping("/{id}")
   public ResponseEntity<Object> deleteUser(@RequestHeader(name = "Authorization") String authorizationHeader,
-      @PathVariable Integer id) {
+      @PathVariable("id") Integer id) {
     try {
       if (!jwtTokenGenerator.validateJwtToken(authorizationHeader)) {
         return new ResponseEntity<>(TokenStatus.TOKEN_INVALID, HttpStatus.UNAUTHORIZED);
       }
       UserDto userDto = jwtTokenGenerator.getUserFromJwtToken(authorizationHeader);
       if (Objects.equals(userDto.getRole(), "admin") || Objects.equals(userDto.getRole(), "ADMIN")
-          || Objects.equals(userDto.getRole(), "Admin")) {
+          || Objects.equals(userDto.getRole(), "Admin")|| Objects.equals(userDto.getRole(), "SUPER USER")|| Objects.equals(userDto.getRole(), "super user")) {
         boolean isDeleted = userService.deleteUser(id);
 
         if (isDeleted) {

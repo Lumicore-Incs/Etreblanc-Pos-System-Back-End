@@ -1,9 +1,9 @@
 package com.selling.service;
 
-import java.util.List;
-
 import com.selling.dto.UserDto;
 import com.selling.dto.get.UserDtoForGet;
+
+import java.util.List;
 
 public interface UserService {
 

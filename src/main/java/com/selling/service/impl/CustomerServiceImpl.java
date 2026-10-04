@@ -1,34 +1,28 @@
 package com.selling.service.impl;
 
-import java.sql.Date;
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
-import java.util.stream.Collectors;
-
-import com.selling.repository.*;
-import com.selling.service.StockService;
+import com.selling.dto.CustomerRequestDTO;
+import com.selling.dto.UserDto;
+import com.selling.dto.get.CustomerDtoGet;
+import com.selling.dto.get.OrderDtoGet;
+import com.selling.model.*;
+import com.selling.repository.CustomerRepo;
+import com.selling.repository.OrderDetailsRepo;
+import com.selling.repository.OrderRepo;
+import com.selling.repository.ProductRepo;
+import com.selling.service.CustomerService;
+import com.selling.service.OrderService;
+import com.selling.util.MapperService;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
 
-import com.selling.dto.CustomerRequestDTO;
-import com.selling.dto.UserDto;
-import com.selling.dto.get.CustomerDtoGet;
-import com.selling.dto.get.OrderDtoGet;
-import com.selling.model.Customer;
-import com.selling.model.Order;
-import com.selling.model.OrderDetails;
-import com.selling.model.Product;
-import com.selling.model.User;
-import com.selling.service.CustomerService;
-import com.selling.service.OrderService;
-import com.selling.util.MapperService;
-
-import lombok.RequiredArgsConstructor;
+import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -40,7 +34,6 @@ public class CustomerServiceImpl implements CustomerService {
   private final ProductRepo productRepository;
   private final MapperService mapperService;
   private final OrderService orderService;
-  private final StockService stockService;
 
   @Override
   @Transactional
@@ -56,7 +49,6 @@ public class CustomerServiceImpl implements CustomerService {
 
     Optional<Customer> opt = Optional.empty();
     if (!contacts.isEmpty()) {
-      System.out.println("1");
       LocalDateTime since = LocalDateTime.now().minusWeeks(2);
       List<String> statuses = List.of("TEMPORARY", "PENDING");
       List<Customer> recent = customerRepository.findByContactsWithOrdersSinceAndStatus(contacts, since, statuses);
@@ -76,12 +68,10 @@ public class CustomerServiceImpl implements CustomerService {
     }
 
     if (opt.isEmpty()) {
-      System.out.println("2");
       // new customer
       Customer newCustomer = createNewCustomer(requestDTO, userDto);
       opt = Optional.of(newCustomer);
     }else {
-      System.out.println("3");
        updateCustomer(opt.get().getCustomerId(), requestDTO);
     }
     return createNewOrder(requestDTO, opt, userDto);
@@ -98,7 +88,6 @@ public class CustomerServiceImpl implements CustomerService {
 
   // 2. Create and Save Order
   private Object createNewOrder(CustomerRequestDTO requestDTO, Optional<Customer> opt, UserDto userDto) {
-    System.out.println("4");
     Order order = new Order();
     order.setCustomer(opt.get());
     if (userDto != null) {
@@ -111,7 +100,7 @@ public class CustomerServiceImpl implements CustomerService {
       order.setStatus("TEMPORARY");
     }
     order.setRemark(requestDTO.getRemark());
-    order.setTrackingId(generateTrackingId());
+    order.setTrackingId("TRK");
     order.setTotalPrice(requestDTO.getTotalPrice());
 
     // generate serial based on product of first item (global increment)
@@ -121,6 +110,7 @@ public class CustomerServiceImpl implements CustomerService {
     }
     String serial = orderService.generateOrderSerialNumber(firstProduct, userDto);
     order.setSerialNo(serial);
+    order.setDeliveryDate(requestDTO.getDeliveryDate());
 
     Order savedOrder = orderRepository.save(order);
 
@@ -138,8 +128,6 @@ public class CustomerServiceImpl implements CustomerService {
           orderDetails.setProduct(product);
           orderDetails.setQty(item.getQty());
           orderDetails.setTotal(item.getTotal());
-
-          stockService.updateStockByName(product.getName(), item.getQty());
 
           return orderDetails;
         })
@@ -161,7 +149,7 @@ public class CustomerServiceImpl implements CustomerService {
     for (Customer customer : allCustomer) {
       CustomerDtoGet dto = mapperService.map(customer, CustomerDtoGet.class);
       if (customer.getUser() != null) {
-        dto.setUser(mapperService.map(customer.getUser(), com.selling.dto.UserDto.class));
+        dto.setUser(mapperService.map(customer.getUser(), UserDto.class));
       }
       customerDtoGetList.add(dto);
     }
@@ -175,7 +163,7 @@ public class CustomerServiceImpl implements CustomerService {
     for (Customer customer : allCustomer) {
       CustomerDtoGet dto = mapperService.map(customer, CustomerDtoGet.class);
       if (customer.getUser() != null) {
-        dto.setUser(mapperService.map(customer.getUser(), com.selling.dto.UserDto.class));
+        dto.setUser(mapperService.map(customer.getUser(), UserDto.class));
       }
       customerDtoGetList.add(dto);
     }
@@ -190,16 +178,12 @@ public class CustomerServiceImpl implements CustomerService {
       Customer customer = customerOptional.get();
       List<Order> orders = customer.getOrders();
       Order lastOrder = orders.get(orders.size() - 1);
-      List<OrderDetails> orderDetails = lastOrder.getOrderDetails();
+      lastOrder.getOrderDetails();
       orderRepository.deleteById(lastOrder.getOrderId());
       return true;
     }else {
       return false;
     }
-  }
-
-  private String generateTrackingId() {
-    return "TRK" + System.currentTimeMillis();
   }
 
   @Override
@@ -218,10 +202,9 @@ public class CustomerServiceImpl implements CustomerService {
           customer.setContact01(requestDTO.getContact01());
         if (requestDTO.getContact02() != null)
           customer.setContact02(requestDTO.getContact02());
-        customer.setStatus("TEMPORARY");
+
 
         Customer saved = customerRepository.save(customer);
-        System.out.println("okzzzzz...");
         return mapperService.map(saved, CustomerDtoGet.class);
       } else {
         throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Customer not found");
@@ -232,4 +215,8 @@ public class CustomerServiceImpl implements CustomerService {
       throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Error updating customer: " + e.getMessage());
     }
   }
+
+
+  //---------other funntion---------------
+
 }

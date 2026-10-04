@@ -1,25 +1,22 @@
 package com.selling.service;
 
 
+import com.selling.dto.StockDetailsDto;
 import com.selling.dto.StockDto;
-import com.selling.model.OrderDetails;
 
+import java.sql.Date;
 import java.util.List;
 
 public interface StockService {
-    StockDto saveStock(StockDto stockDto);
+    StockDto saveStock(StockDetailsDto stockDto);
 
-    StockDto getStockById(Long aLong);
-
-    List<StockDto> getAllStock();
-
-    StockDto updateStock(Integer id, StockDto stockDto);
+    StockDto updateStock(Integer id, StockDetailsDto stockDto);
 
     boolean deleteStock(Integer id);
 
-    List<StockDto> getAllStockByType(String name);
-
     void updateStockByName(String name, Integer qty);
 
-    void updateStockQty(List<OrderDetails> details);
+    List<StockDetailsDto> getStockDetails(String type, String status, Date date, String month);
+
+    List<StockDto> getStockQty();
 }

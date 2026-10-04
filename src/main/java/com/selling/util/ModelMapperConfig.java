@@ -1,14 +1,13 @@
 package com.selling.util;
 
+import com.selling.dto.UserDto;
+import com.selling.dto.get.UserDtoForGet;
+import com.selling.model.User;
 import org.modelmapper.ModelMapper;
 import org.modelmapper.TypeMap;
 import org.modelmapper.convention.MatchingStrategies;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-
-import com.selling.dto.UserDto;
-import com.selling.dto.get.UserDtoForGet;
-import com.selling.model.User;
 
 @Configuration
 public class ModelMapperConfig {

@@ -1,22 +1,5 @@
 package com.selling.controller;
 
-import java.util.List;
-import java.util.Objects;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.CrossOrigin;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestHeader;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
-
 import com.selling.dto.ApiResponse;
 import com.selling.dto.CustomerRequestDTO;
 import com.selling.dto.UserDto;
@@ -24,9 +7,15 @@ import com.selling.dto.get.CustomerDtoGet;
 import com.selling.service.CustomerService;
 import com.selling.util.JWTTokenGenerator;
 import com.selling.util.TokenStatus;
-
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
+import java.util.Objects;
 
 @CrossOrigin()
 @RestController
@@ -80,7 +69,7 @@ public class CustomerController {
 
   @DeleteMapping("/{id}")
   public ResponseEntity<Object> deleteCustomer(@RequestHeader(name = "Authorization") String authorizationHeader,
-      @PathVariable Integer id) {
+      @PathVariable("id") Integer id) {
     try {
       if (!jwtTokenGenerator.validateJwtToken(authorizationHeader)) {
         return new ResponseEntity<>(TokenStatus.TOKEN_INVALID, HttpStatus.UNAUTHORIZED);
@@ -100,7 +89,7 @@ public class CustomerController {
   @PutMapping("/{id}")
   public ResponseEntity<Object> updateCustomer(
       @RequestHeader(name = "Authorization") String authorizationHeader,
-      @PathVariable Integer id,
+      @PathVariable("id") Integer id,
       @RequestBody CustomerRequestDTO requestDTO) {
     try {
       if (!jwtTokenGenerator.validateJwtToken(authorizationHeader)) {

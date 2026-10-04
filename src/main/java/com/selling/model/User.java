@@ -1,21 +1,11 @@
 package com.selling.model;
 
-import java.util.List;
-
-import jakarta.persistence.CascadeType;
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.FetchType;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
-import jakarta.persistence.OneToMany;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+
+import java.util.List;
 
 @Table(name = "users")
 @Data
@@ -42,8 +32,17 @@ public class User {
   @JoinColumn(name = "product_id", referencedColumnName = "product_id")
   private Product product;
 
-  @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
+  @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
   private List<Customer> customers;
+
+  @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
+  private List<Salary> salaries;
+
+  @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
+  private List<Payment> payments;
+
+  @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
+  private List<Order> order;
 
   public User(Long id, String name, String email, String telephone, String role, String registration_date,
       String status, String type, String password) {
