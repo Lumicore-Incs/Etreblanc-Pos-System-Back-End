@@ -123,12 +123,6 @@ public class OrderController {
                 return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
                         .body(ApiResponse.error("Invalid token", 401));
             }
-//            UserDto userDto = jwtTokenGenerator.getUserFromJwtToken(authorizationHeader);
-//            if (!(Objects.equals(userDto.getRole(), "SUPER USER") || Objects.equals(userDto.getRole(), "ADMIN"))) {
-//                Object result = orderService.deleteOrder(id);
-//                return ResponseEntity.status(HttpStatus.FORBIDDEN)
-//                        .body(ApiResponse.error("Forbidden: admin only", 403));
-//            }
 
             Object result = orderService.deleteOrder(id);
             return new ResponseEntity<>(result, HttpStatus.OK);

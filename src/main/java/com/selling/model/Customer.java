@@ -32,6 +32,7 @@ public class Customer {
   private Integer customerId;
 
   private String name;
+  private String customerName;
 
   private String address;
 

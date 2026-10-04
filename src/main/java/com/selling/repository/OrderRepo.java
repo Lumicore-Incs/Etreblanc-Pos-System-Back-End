@@ -18,6 +18,8 @@ public interface OrderRepo extends JpaRepository<Order, Integer> {
   @EntityGraph(attributePaths = { "customer", "orderDetails", "orderDetails.product" })
   List<Order> findByUser(User userId);
 
+  Order findAllByOrderId(Integer orderId);
+
   List<Order> findAllByOrderByOrderIdDesc();
 
   List<Order> findTop200ByOrderByOrderIdDesc();

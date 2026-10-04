@@ -16,6 +16,7 @@ import lombok.ToString;
 public class CustomerRequestDTO {
   private Integer customerId;
   private String name;
+  private String customerName;
   private String serialNo;
   private String address;
   private String contact01;

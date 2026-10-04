@@ -47,14 +47,12 @@ public class OrderServiceImpl implements OrderService {
 
 
     @Override
-    public String generateOrderSerialNumber(Product product) {
-        // Global increment: fetch most recent order, parse its numeric suffix,
-        // increment
-        Order last = orderRepo.findTopBySerialNoStartingWithOrderBySerialNoDesc(product.getSerialPrefix());
+    public String generateOrderSerialNumber(Product product, UserDto userDto) {
+        Order last = orderRepo.findTopBySerialNoStartingWithOrderBySerialNoDesc(userDto.getSerialPrefix());
+
         long nextNum = 1L;
         if (last != null && last.getSerialNo() != null) {
             String serial = last.getSerialNo();
-            // numeric suffix is trailing digits; find last non-digit
             int i = serial.length() - 1;
             while (i >= 0 && Character.isDigit(serial.charAt(i)))
                 i--;
@@ -67,8 +65,7 @@ public class OrderServiceImpl implements OrderService {
             }
         }
 
-        String prefix = product.getSerialPrefix() != null ? product.getSerialPrefix() : "XXX";
-        // format number as 5 digits with leading zeros
+        String prefix = userDto.getSerialPrefix() != null ? userDto.getSerialPrefix() : "XXX";
         String numFormatted = String.format("%05d", nextNum);
         return prefix + numFormatted;
     }
@@ -394,32 +391,41 @@ public class OrderServiceImpl implements OrderService {
     @Override
     @Transactional
     public Object deleteOrder(Integer orderId) {
+        System.out.println("pp");
         try {
-            Order order = orderRepo.findById(orderId).orElse(null);
+            Order order = orderRepo.findAllByOrderId(orderId);
+
             if (order == null) {
                 throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Order not found");
             }
             Customer customer = order.getCustomer();
 
+            System.out.println("customer is : "+customer.getCustomerId());
+
             if (order.getStatus().equals("PENDING") || order.getStatus().equals("TEMPORARY")) {
                 List<OrderDetails> details = orderDetailsRepo.findByOrder(order);
+                System.out.println("2");
+                System.out.println("order id is"+order.getOrderId());
                 if (details != null && !details.isEmpty()) {
+                    System.out.println("delete");
                     orderDetailsRepo.deleteAll(details);
                 }
-
+                System.out.println("ddd");
                 orderRepo.delete(order);
+                System.out.println("ppp");
                 stockService.updateStockQty(details);
 
-                Order customerOtherOrder = orderRepo.findByCustomer(order.getCustomer());
-                if (customerOtherOrder == null) {
-                    customerRepo.delete(customer);
-                }
+//                Order customerOtherOrder = orderRepo.findByCustomer(order.getCustomer());
+//                if (customerOtherOrder == null) {
+//                    customerRepo.delete(customer);
+//                }
 
                 return success("Order deleted successfully", null);
             }
             return null;
 
         } catch (ResponseStatusException rse) {
+            System.out.println("ok "+rse.getMessage());
             throw rse;
         } catch (Exception e) {
             throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Error deleting order: " + e.getMessage());

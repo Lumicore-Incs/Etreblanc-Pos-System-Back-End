@@ -26,7 +26,7 @@ public interface OrderService {
   Object deleteOrder(Integer orderId);
 
   // Generate serial number for an order based on product
-  String generateOrderSerialNumber(Product product);
+  String generateOrderSerialNumber(Product product, UserDto userDto);
 
   String trackingUpload(List<TrackingDto> trackingList);
 }
