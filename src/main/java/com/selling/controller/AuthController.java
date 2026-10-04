@@ -61,7 +61,6 @@ public class AuthController {
       UserDtoForGet dto = this.userService.registerUser(userDto);
       return new ResponseEntity<>(dto, HttpStatus.CREATED);
     } else {
-      System.out.println(isUser);
       return new ResponseEntity<>("Email is Allready exist", HttpStatus.BAD_REQUEST);
     }
   }
@@ -96,7 +95,7 @@ public class AuthController {
 
   @PutMapping("/update/{userId}")
   public ResponseEntity<Object> updateUser(@PathVariable Long userId, @RequestBody UserDto userDto,
-      @RequestHeader(name = "Authorization") String authorizationHeader) {
+                                           @RequestHeader(name = "Authorization") String authorizationHeader) {
     if (this.jwtTokenGenerator.validateJwtToken(authorizationHeader)) {
       UserDtoForGet dto = this.userService.updateUser(userDto, userId);
       return new ResponseEntity<>(dto, HttpStatus.CREATED);

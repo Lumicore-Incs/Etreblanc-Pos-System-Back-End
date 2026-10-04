@@ -14,6 +14,7 @@ import java.time.LocalDateTime;
 public class CustomerDto {
     private Integer customerId;
     private String name;
+    private String customerName;
     private String address;
     private String contact01;
     private String contact02;

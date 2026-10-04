@@ -37,14 +37,12 @@ public class DashBoardServiceImpl implements DashBoardService {
   public List<ExcelTypeDto> findOrder(String name) {
     try {
       List<ExcelTypeDto> excelTypeDtos = new ArrayList<>();
-      Product byName = productRepo.findByName(name);
-      if (byName == null) {
-        List<Order> pendingOrdersWithQuantities = customerRepo.findPendingOrdersWithQuantities(0);
+      Product byName = productRepo.findByName("Night Face Cream");
+
+        List<Order> pendingOrdersWithQuantities = customerRepo.findAllPendingOrdersWithQuantities();
 
         for (Order order : pendingOrdersWithQuantities) {
           int size = order.getOrderDetails().size();
-
-          if (size != 1) {
             StringBuilder qtyDetails = null;
             for (OrderDetails od : order.getOrderDetails()) {
               Product product = productRepo.findAllByProductId(od.getProduct().getProductId());
@@ -59,6 +57,7 @@ public class DashBoardServiceImpl implements DashBoardService {
             customer.setStatus("PRINTING");
             customerRepo.save(customer);
 
+
             ExcelTypeDto excelTypeDto = new ExcelTypeDto();
             excelTypeDto.setId(order.getOrderId());
             excelTypeDto.setName(customer.getName());
@@ -67,38 +66,7 @@ public class DashBoardServiceImpl implements DashBoardService {
             excelTypeDto.setContact02(customer.getContact02());
             excelTypeDto.setPrice(String.valueOf(order.getTotalPrice()));
             excelTypeDtos.add(excelTypeDto);
-          }
         }
-      } else {
-        List<Order> pendingOrdersWithQuantities = customerRepo.findPendingOrdersWithQuantities(byName.getProductId());
-        for (Order order : pendingOrdersWithQuantities) {
-          int size = order.getOrderDetails().size();
-          StringBuilder qtyDetails = null;
-          for (OrderDetails od : order.getOrderDetails()) {
-
-            if (od.getProduct().getProductId().equals(byName.getProductId()) && size == 1) {
-              Product product = productRepo.findAllByProductId(od.getProduct().getProductId());
-              if (qtyDetails == null) {
-                qtyDetails = new StringBuilder();
-              }
-              qtyDetails.append(" + ").append(product.getName()).append(" + ").append(od.getQty());
-
-              Customer customer = order.getCustomer();
-              customer.setStatus("PRINTING");
-              customerRepo.save(customer);
-              ExcelTypeDto excelTypeDto = new ExcelTypeDto();
-              excelTypeDto.setId(order.getOrderId());
-              excelTypeDto.setName(customer.getName());
-              excelTypeDto.setAddress(customer.getAddress());
-              excelTypeDto.setContact01(customer.getContact01());
-              excelTypeDto.setContact02(customer.getContact02());
-              excelTypeDto.setPrice(String.valueOf(order.getTotalPrice()));
-              excelTypeDtos.add(excelTypeDto);
-            }
-          }
-        }
-      }
-
       return excelTypeDtos;
     }catch (Exception e) {
       System.out.println("massage is : " + e.getMessage());

@@ -29,6 +29,7 @@ public class User {
   @Column(name = "user_id")
   private Long id;
   private String name;
+  private String serialPrefix;
   private String email;
   private String telephone;
   private String role;

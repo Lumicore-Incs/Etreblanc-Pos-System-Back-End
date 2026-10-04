@@ -1,5 +1,7 @@
 package com.selling.service.impl;
 
+import java.sql.Date;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -54,6 +56,7 @@ public class CustomerServiceImpl implements CustomerService {
 
     Optional<Customer> opt = Optional.empty();
     if (!contacts.isEmpty()) {
+      System.out.println("1");
       LocalDateTime since = LocalDateTime.now().minusWeeks(2);
       List<String> statuses = List.of("TEMPORARY", "PENDING");
       List<Customer> recent = customerRepository.findByContactsWithOrdersSinceAndStatus(contacts, since, statuses);
@@ -73,9 +76,13 @@ public class CustomerServiceImpl implements CustomerService {
     }
 
     if (opt.isEmpty()) {
+      System.out.println("2");
       // new customer
       Customer newCustomer = createNewCustomer(requestDTO, userDto);
       opt = Optional.of(newCustomer);
+    }else {
+      System.out.println("3");
+       updateCustomer(opt.get().getCustomerId(), requestDTO);
     }
     return createNewOrder(requestDTO, opt, userDto);
   }
@@ -85,11 +92,13 @@ public class CustomerServiceImpl implements CustomerService {
     if (newCustomer.getUser() == null) {
       newCustomer.setUser(mapperService.map(userDto, User.class));
     }
+    newCustomer.setStatus("PENDING");
     return customerRepository.save(newCustomer);
   }
 
   // 2. Create and Save Order
   private Object createNewOrder(CustomerRequestDTO requestDTO, Optional<Customer> opt, UserDto userDto) {
+    System.out.println("4");
     Order order = new Order();
     order.setCustomer(opt.get());
     if (userDto != null) {
@@ -110,7 +119,7 @@ public class CustomerServiceImpl implements CustomerService {
     if (requestDTO.getItems() != null && !requestDTO.getItems().isEmpty()) {
       firstProduct = productRepository.findAllByProductId(requestDTO.getItems().get(0).getProductId());
     }
-    String serial = orderService.generateOrderSerialNumber(firstProduct);
+    String serial = orderService.generateOrderSerialNumber(firstProduct, userDto);
     order.setSerialNo(serial);
 
     Order savedOrder = orderRepository.save(order);
@@ -209,9 +218,10 @@ public class CustomerServiceImpl implements CustomerService {
           customer.setContact01(requestDTO.getContact01());
         if (requestDTO.getContact02() != null)
           customer.setContact02(requestDTO.getContact02());
-        customer.setStatus(requestDTO.getStatus());
+        customer.setStatus("TEMPORARY");
 
         Customer saved = customerRepository.save(customer);
+        System.out.println("okzzzzz...");
         return mapperService.map(saved, CustomerDtoGet.class);
       } else {
         throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Customer not found");

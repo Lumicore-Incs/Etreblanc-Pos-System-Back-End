@@ -49,7 +49,7 @@ public class UserServiceImpl implements UserService {
   @Override
   public UserDto userLogin(UserDto dto) {
     BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
-    List<User> userNames = userRepo.findAllByEmail(dto.getEmail());
+    List<User> userNames = userRepo.findAllByName(dto.getEmail());
     for (User name : userNames) {
       boolean isPasswordMatches = passwordEncoder.matches(dto.getPassword(), name.getPassword());
       if (isPasswordMatches) {
@@ -112,7 +112,14 @@ public class UserServiceImpl implements UserService {
       userDto.setId(byId.getId());
       userDto.setRegistration_date(byId.getRegistration_date());
       userDto.setProductId(userDto.getProductId());
-      userDto.setPassword(byId.getPassword());
+      userDto.setStatus(userDto.getStatus());
+      if (userDto.getPassword()==null){
+        System.out.println("1");
+        userDto.setPassword(byId.getPassword());
+      }else {
+        System.out.println("2");
+        userDto.setPassword(passwordEncoder.encode(userDto.getPassword()));
+      }
       User user = mapperService.map(userDto, User.class);
       User save = userRepo.save(user);
       return mapperService.map(save, UserDtoForGet.class);

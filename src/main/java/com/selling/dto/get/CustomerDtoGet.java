@@ -16,6 +16,7 @@ import lombok.ToString;
 public class CustomerDtoGet {
     private Integer customerId;
     private String name;
+    private String CustomerName;
     private String address;
     private String contact01;
     private String contact02;

@@ -14,6 +14,7 @@ import lombok.ToString;
 public class UserDtoForGet {
     private Long id;
     private String name;
+    private String serialPrefix;
     private String email;
     private String telephone;
     private String role;
