@@ -57,6 +57,8 @@ public interface OrderRepo extends JpaRepository<Order, Integer> {
     // serialNo මගින් Order සොයාගැනීම
     Optional<Order> findBySerialNo(String serialNo);
 
+        List<Order> findBySerialNoIn(List<String> serialNumbers);
+
     Order findByCustomer(Customer customer);
 
     @Query("""

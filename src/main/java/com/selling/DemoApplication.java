@@ -45,18 +45,18 @@ public class DemoApplication {
       logger.error("An error occurred during user initialization.", e);
     }
 
-     new Thread(() -> {
-     while (true) {
-     try {
-     // මිනිත්තු 2කට වරක් print කරන්න
-     Thread.sleep(30000); // 120000 ms = 2 minutes (fixed from 30 seconds)
-     System.out.println("Background check - 2 minutes elapsed");
-     dashboardController.updateOrderDetails();
-     } catch (InterruptedException e) {
-     e.printStackTrace();
-     }
-     }
-     }).start();
+//     new Thread(() -> {
+//     while (true) {
+//     try {
+//     // මිනිත්තු 2කට වරක් print කරන්න
+//     Thread.sleep(30000); // 120000 ms = 2 minutes (fixed from 30 seconds)
+//     System.out.println("Background check - 2 minutes elapsed");
+//     dashboardController.updateOrderDetails();
+//     } catch (InterruptedException e) {
+//     e.printStackTrace();
+//     }
+//     }
+//     }).start();
 
   }
 }

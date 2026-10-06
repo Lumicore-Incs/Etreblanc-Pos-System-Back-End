@@ -13,6 +13,8 @@ import java.util.List;
 public interface CustomerRepo extends JpaRepository<Customer, Integer> {
   List<Customer> findAllByUserId(Long id);
 
+    List<Customer> findByContact01InOrContact02In(Collection<String> contact01, Collection<String> contact02);
+
   @Query("SELECT new com.selling.dto.get.ExcelTypeDto(" +
       "o.serialNo, c.name, c.address, c.contact01, c.contact02,null,o.remark) " +
       "FROM Customer c " +
