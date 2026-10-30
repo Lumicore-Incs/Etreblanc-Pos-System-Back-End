@@ -39,7 +39,7 @@ public class OrderSpecification {
             // User filter
             if (userId != null) {
                 predicates.add(
-                        cb.equal(root.get("user").get("userId"), userId)
+                        cb.equal(root.get("user").get("id"), userId)
                 );
             }
 

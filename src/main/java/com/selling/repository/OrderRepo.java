@@ -15,6 +15,19 @@ import java.util.List;
 import java.util.Optional;
 
 public interface OrderRepo extends JpaRepository<Order, Integer>, JpaSpecificationExecutor<Order> {
+    @EntityGraph(attributePaths = "customer")
+    @Query("SELECT o FROM Order o WHERE o.date >= :startDate AND o.date < :endDate ORDER BY o.date")
+    List<Order> findOrdersForExport(
+            @Param("startDate") LocalDateTime startDate,
+            @Param("endDate") LocalDateTime endDate);
+
+    @EntityGraph(attributePaths = "customer")
+    @Query("SELECT o FROM Order o WHERE o.user.id = :userId AND o.date >= :startDate AND o.date < :endDate ORDER BY o.date")
+    List<Order> findOrdersForExportByUser(
+            @Param("userId") Long userId,
+            @Param("startDate") LocalDateTime startDate,
+            @Param("endDate") LocalDateTime endDate);
+
     @EntityGraph(attributePaths = {"customer", "orderDetails", "orderDetails.product"})
     List<Order> findByUser(User userId);
 
